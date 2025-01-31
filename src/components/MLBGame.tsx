@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Trophy, Search, X, Check } from 'lucide-react';
+import { Trophy, Search, X, Check, Eye, Lightbulb } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
 
 interface Guess {
@@ -18,6 +18,9 @@ interface Guess {
 const MLBGame = () => {
   const [guesses, setGuesses] = useState<Guess[]>([]);
   const [currentGuess, setCurrentGuess] = useState('');
+  const [playerImage, setPlayerImage] = useState('');
+  const [isImageRevealed, setIsImageRevealed] = useState(false);
+  const [clue, setClue] = useState('');
   const [targetPlayer] = useState({
     name: "Shohei Ohtani",
     team: "Los Angeles Dodgers",
@@ -29,16 +32,15 @@ const MLBGame = () => {
   const handleGuess = () => {
     if (!currentGuess) return;
 
-    // In a real implementation, we would validate against actual MLB player data
     const isCorrect = currentGuess.toLowerCase() === targetPlayer.name.toLowerCase();
 
     const newGuess: Guess = {
       name: currentGuess,
       isCorrect,
       feedback: {
-        team: true, // This would be compared with actual data
-        position: false, // This would be compared with actual data
-        age: 'correct', // This would be compared with actual data
+        team: true,
+        position: false,
+        age: 'correct',
       }
     };
 
@@ -49,6 +51,46 @@ const MLBGame = () => {
       toast({
         title: "Congratulations! 🎉",
         description: "You've correctly guessed today's player!",
+      });
+    }
+  };
+
+  const handleGetClue = async () => {
+    // In a real implementation, this would call Gemini API
+    const playerInfo = `${targetPlayer.name} is a ${targetPlayer.position} for the ${targetPlayer.team}`;
+    try {
+      // Simulated API call
+      const clueText = `This player is known for their exceptional two-way playing ability.`;
+      setClue(clueText);
+      toast({
+        title: "-20 points",
+        description: "Here's your clue!",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to generate clue. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleRevealImage = async () => {
+    // In a real implementation, this would call an image search API
+    try {
+      // Simulated API call
+      const imageUrl = `https://example.com/${targetPlayer.name.toLowerCase().replace(' ', '-')}.jpg`;
+      setPlayerImage(imageUrl);
+      setIsImageRevealed(true);
+      toast({
+        title: "-50 points",
+        description: "Image revealed!",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load image. Please try again.",
+        variant: "destructive",
       });
     }
   };
@@ -73,6 +115,42 @@ const MLBGame = () => {
             <Button onClick={handleGuess} className="bg-baseball-blue hover:bg-baseball-blue/90">
               Guess
             </Button>
+          </div>
+
+          {/* Hidden Player Image Section */}
+          <div className="mb-6">
+            <div className={`w-full h-64 bg-gray-200 rounded-lg mb-4 overflow-hidden ${!isImageRevealed && 'filter blur-xl'}`}>
+              {playerImage && (
+                <img
+                  src={playerImage}
+                  alt="Player"
+                  className="w-full h-full object-cover"
+                />
+              )}
+            </div>
+            <div className="flex gap-4 justify-center mb-4">
+              <Button
+                onClick={handleGetClue}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <Lightbulb className="w-4 h-4" />
+                Give me a clue (-20)
+              </Button>
+              <Button
+                onClick={handleRevealImage}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <Eye className="w-4 h-4" />
+                Reveal image (-50)
+              </Button>
+            </div>
+            {clue && (
+              <div className="bg-blue-50 p-4 rounded-lg text-blue-700 mb-4">
+                {clue}
+              </div>
+            )}
           </div>
 
           <div className="space-y-4">
