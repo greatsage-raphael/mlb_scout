@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Baseball, Search, X, Check } from 'lucide-react';
+import { Trophy, Search, X, Check } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
 
 interface Guess {
